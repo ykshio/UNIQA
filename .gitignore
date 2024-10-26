@@ -11,3 +11,9 @@ env/
 *.env
 docker-compose.override.yml
 
+# Ignore migration files
+uniqa/likes/migrations/
+uniqa/polls/migrations/
+uniqa/questions/migrations/
+uniqa/users/migrations/
+
