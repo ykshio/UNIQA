@@ -1,0 +1,17 @@
+
+<!-- templates/polls/poll_option_form.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>オプション追加</title>
+</head>
+<body>
+    <h1>投票のオプションを追加する</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">追加</button>
+    </form>
+</body>
+</html>

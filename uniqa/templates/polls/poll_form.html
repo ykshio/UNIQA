@@ -1,0 +1,17 @@
+
+<!-- templates/polls/poll_form.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>投票作成</title>
+</head>
+<body>
+    <h1>投票を作成する</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">作成</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,17 @@
+
+<!-- templates/questions/question_form.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>質問投稿</title>
+</head>
+<body>
+    <h1>質問を投稿する</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">投稿</button>
+    </form>
+</body>
+</html>

@@ -6,6 +6,7 @@ class Question(models.Model):
     description = models.TextField()
     created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='questions')
     created_at = models.DateTimeField(auto_now_add=True)
+    is_resolved = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
