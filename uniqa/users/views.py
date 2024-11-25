@@ -2,9 +2,30 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect
 from .models import CustomUser
+from .forms import CustomUserCreationForm
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from django.utils.crypto import get_random_string
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
+from .models import SignupToken
+from django.http import HttpResponse
+from django.urls import reverse
+import uuid
+from django.http import HttpResponse
 
 def signup_view(request):
-    return render(request, 'users/signup.html')
+    if request.method == "POST":
+        form = CustomUserCreationForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('login')  # ログイン画面にリダイレクト
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'users/signup.html', {'form': form})
 
 def profile_view(request, pk):
     return render(request, 'users/profile.html')
@@ -36,18 +57,6 @@ class CustomLogoutView(LogoutView):
         return self.post(request, *args, **kwargs)
 
 
-from django.shortcuts import render, redirect
-from django.core.mail import send_mail
-from django.utils.crypto import get_random_string
-from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes, force_str
-from django.contrib.auth import get_user_model
-from django.contrib.auth.hashers import make_password
-from .models import SignupToken
-from django.http import HttpResponse
-from django.urls import reverse
-import uuid
 
 User = get_user_model()
 
@@ -100,3 +109,16 @@ def signup_confirm(request, token):
         signup_token.delete()
         return redirect("users:login")
     return render(request, "users/signup_confirm.html", {"token": token})
+
+def login_view(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username=email, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('profile')  # ユーザープロフィール画面にリダイレクト
+        else:
+            return HttpResponse("ログイン失敗")
+    return render(request, 'users/login.html')

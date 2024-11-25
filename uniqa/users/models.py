@@ -4,12 +4,12 @@ import uuid
 
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
-    student_id = models.CharField(max_length=20, unique=True)
+    student_id = models.CharField(max_length=20, unique=True,blank=True)
     display_name = models.CharField(max_length=100, unique=False)
-    year = models.PositiveIntegerField()
+    year = models.PositiveIntegerField(blank=True, null=True)
     department = models.CharField(max_length=100)
     icon = models.ImageField(upload_to='icons/', null=True, blank=True)
-    gpa = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True)
+    gpa = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True)
     circle = models.CharField(max_length=100, blank=True, null=True)
     
     groups = models.ManyToManyField(
@@ -27,6 +27,13 @@ class CustomUser(AbstractUser):
         help_text="Specific permissions for this user.",
         verbose_name="user permissions",
     )
+    
+    def save(self, *args, **kwargs):
+        # メールアドレスの@前部分をstudent_idとして設定
+        if not self.student_id and self.email:
+            self.student_id = self.email.split('@')[0]
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.display_name
