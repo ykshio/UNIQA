@@ -17,6 +17,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
+from django.shortcuts import redirect, render
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LogoutView
+
+def home(request):
+    # ログイン済みの場合、質問リストへリダイレクト
+    if request.user.is_authenticated:
+        return redirect('questions:question_list')
+    # 未ログインの場合は説明ページを表示
+    return render(request, 'home.html')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,5 +34,6 @@ urlpatterns = [
     path('questions/', include('questions.urls')),
     path('polls/', include('polls.urls')),
     path('likes/', include('likes.urls')),
-    path('', RedirectView.as_view(url='/questions/', permanent=False)),
+    path('', home, name='home'),
+    path('logout/', LogoutView.as_view(next_page='home'), name='logout'),
 ]

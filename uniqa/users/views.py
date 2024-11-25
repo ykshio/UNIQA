@@ -26,3 +26,77 @@ def register(request):
 def profile(request):
     return render(request, 'users/profile.html', {'user': request.user})
 
+def accout_settings(request):
+    return render(request, 'users/settings.html')
+
+from django.contrib.auth.views import LogoutView
+
+class CustomLogoutView(LogoutView):
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
+
+
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from django.utils.crypto import get_random_string
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
+from .models import SignupToken
+from django.http import HttpResponse
+from django.urls import reverse
+import uuid
+
+User = get_user_model()
+
+def signup_request(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        
+        # メールアドレスが既に登録されているか確認
+        if User.objects.filter(email=email).exists():
+            return HttpResponse("このメールアドレスはすでに登録されています。")
+
+        # 既存トークンの確認
+        existing_token = SignupToken.objects.filter(email=email).first()
+        
+        if existing_token:
+            token = existing_token.token  # 既存トークンを使う
+        else:
+            token = uuid.uuid4()  # 新しいUUIDトークンを生成
+            # 新しいトークンをデータベースに保存
+            SignupToken.objects.create(email=email, token=token)
+        
+        # サインアップ確認用のURLを生成
+        signup_url = request.build_absolute_uri(reverse('users:signup_confirm', args=[token]))
+        
+        # 認証メールを送信
+        send_mail(
+            "アカウント作成認証",
+            f"以下のリンクをクリックしてアカウント作成を完了してください:\n{signup_url}",
+            'auth.uniqa@gmail.com',
+            [email],
+        )
+        
+        return HttpResponse("認証メールを送信しました。")
+    
+    return render(request, "users/signup_request.html")
+def signup_confirm(request, token):
+    try:
+        signup_token = SignupToken.objects.get(token=token)
+    except SignupToken.DoesNotExist:
+        return HttpResponse("無効なトークンです。")
+
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        user = User.objects.create(
+            username=username,
+            email=signup_token.email,
+            password=make_password(password),
+        )
+        signup_token.delete()
+        return redirect("users:login")
+    return render(request, "users/signup_confirm.html", {"token": token})

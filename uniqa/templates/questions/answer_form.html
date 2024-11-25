@@ -1,17 +1,10 @@
-
-<!-- templates/questions/answer_form.html -->
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>回答投稿</title>
-</head>
-<body>
-    <h1>回答を投稿する</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">投稿</button>
-    </form>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}回答する{% endblock %}
+{% block content %}
+<h2>回答を投稿</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">投稿</button>
+</form>
+{% endblock %}

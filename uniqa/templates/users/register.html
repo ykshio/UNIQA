@@ -1,17 +1,10 @@
-<!-- templates/users/register.html -->
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>ユーザー登録</title>
-</head>
-<body>
-    <h1>ユーザー登録</h1>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">登録</button>
-    </form>
-</body>
-</html>
-
+{% extends 'base.html' %}
+{% block title %}会員登録{% endblock %}
+{% block content %}
+<h2>会員登録</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">登録</button>
+</form>
+{% endblock %}
