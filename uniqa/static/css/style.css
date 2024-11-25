@@ -1,0 +1,23 @@
+/* 例えば、base.cssに追加 */
+.question-section, .answers-section, .answer-form-section {
+    margin-bottom: 20px;
+}
+
+.answer {
+    margin-top: 10px;
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}

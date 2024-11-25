@@ -3,37 +3,47 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{{ question.title }}</h1>
-<p><strong>Posted by:</strong> {{ question.created_by.display_name }}</p>
-<p><strong>Created at:</strong> {{ question.created_at }}</p>
-<p><strong>Description:</strong></p>
-<p>{{ question.description }}</p>
+<div class="question-section">
+    <h1>{{ question.title }}</h1>
+    {% if question.is_resolved %}
+    <p><strong>解決済</strong></p>
+    {% else %}
+    <p><strong>未解決</strong></p>
+    {% endif %}
+    <p><strong>質問者:</strong> {{ question.created_by.display_name }}</p>
+    <p><strong>質問日時:</strong> {{ question.created_at }}</p>
+    <p><strong>質問内容:</strong></p>
+    <p>{{ question.description }}</p>
+</div>
 
-{% if question.is_resolved %}
-<p><strong>Status:</strong> Resolved</p>
-{% else %}
-<p><strong>Status:</strong> Unresolved</p>
-{% endif %}
+<hr>
 
-<h2>Answers</h2>
-{% if answers %}
-<ul>
-    {% for answer in answers %}
-    <li>
-        <p><strong>Answered by:</strong> {{ answer.created_by.display_name }}</p>
-        <p><strong>Created at:</strong> {{ answer.created_at }}</p>
-        <p>{{ answer.content }}</p>
-    </li>
-    {% endfor %}
-</ul>
-{% else %}
-<p>No answers yet.</p>
-{% endif %}
+<div class="answers-section">
+    <h2>Answers</h2>
+    {% if answers %}
+    <ul>
+        {% for answer in answers %}
+        <li class="answer">
+            <p><strong>回答者:</strong> {{ answer.created_by.display_name }}</p>
+            <p><strong>回答日時:</strong> {{ answer.created_at }}</p>
+            <p>{{ answer.content }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No answers yet.</p>
+    {% endif %}
+</div>
 
-<h3>Post an Answer</h3>
-<form method="post">
-    {% csrf_token %}
-    <textarea name="content" rows="4" cols="50" placeholder="Your answer here..."></textarea><br><br>
-    <button type="submit">Submit Answer</button>
-</form>
+<hr>
+
+<div class="answer-form-section">
+    <h3>Post an Answer</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }} <!-- AnswerFormのフォームをレンダリング -->
+        <button type="submit">Submit Answer</button>
+    </form>
+</div>
+
 {% endblock %}

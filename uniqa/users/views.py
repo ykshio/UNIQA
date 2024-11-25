@@ -18,6 +18,7 @@ import uuid
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserChangeForm
+from django.shortcuts import render, get_object_or_404
 
 def signup_view(request):
     if request.method == "POST":
@@ -29,15 +30,17 @@ def signup_view(request):
         form = CustomUserCreationForm()
     return render(request, 'users/signup.html', {'form': form})
 
+@login_required
 def profile_view(request, pk):
-    return render(request, 'users/profile.html')
+    user = get_object_or_404(CustomUser, pk=pk)
+    return render(request, 'users/profile.html', {'user': user})
 
 def profile_edit_view(request):
     if request.method == 'POST':
         form = CustomUserChangeForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
             form.save()
-            return redirect('profile_view')  # 編集後にプロフィールページにリダイレクト
+            return redirect('home', pk=request.user.pk)  # 編集後にプロフィールページにリダイレクト
     else:
         form = CustomUserChangeForm(instance=request.user)
 
@@ -53,12 +56,6 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'users/register.html', {'form': form})
-
-def profile(request):
-    return render(request, 'users/profile.html', {'user': request.user})
-
-def accout_settings(request):
-    return render(request, 'users/settings.html')
 
 from django.contrib.auth.views import LogoutView
 

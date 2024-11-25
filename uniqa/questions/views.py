@@ -10,9 +10,26 @@ def question_list(request):
 
 @login_required
 def question_detail(request, pk):
-    question = get_object_or_404(Question, id=pk)
-    answers = question.answers.all()
-    return render(request, 'questions/question_detail.html', {'question': question, 'answers': answers})
+    question = get_object_or_404(Question, pk=pk)
+    answers = Answer.objects.filter(question=question)
+    
+    # POSTされた場合の処理
+    if request.method == 'POST':
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            answer = form.save(commit=False)
+            answer.question = question
+            answer.created_by = request.user
+            answer.save()
+            return redirect('questions:question_detail', pk=question.pk)
+    else:
+        form = AnswerForm()
+
+    return render(request, 'questions/question_detail.html', {
+        'question': question,
+        'answers': answers,
+        'form': form
+    })
 
 @login_required
 def question_create(request):

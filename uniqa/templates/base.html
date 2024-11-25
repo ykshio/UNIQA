@@ -27,7 +27,10 @@
                         <a class="nav-link" href="{% url 'questions:question_form' %}">質問を投稿</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'users:settings' %}">アカウント設定</a>
+                        <a class="nav-link" href="{% url 'users:profile_edit' %}">アカウント設定</a>
+                        <!-- <a class="nav-link" href="{% url 'users:profile_view' pk=request.user.pk %}">
+                            {{ request.user.display_name|default:request.user.username }}
+                        </a> -->
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'users:logout' %}">ログアウト</a>
@@ -50,10 +53,10 @@
             </div>
         </div>
     </nav>
-    <main class="container mt-5">
+    <main class="container mt-5 mb-5 pb-5">
         {% block content %}{% endblock %}
     </main>
-    <footer class="bg-dark text-white text-center py-3">
+    <footer class="bg-dark text-white text-center py-1 fixed-bottom">
         <p>© 2024 UNIQA</p>
     </footer>
 </body>
