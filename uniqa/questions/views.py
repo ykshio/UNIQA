@@ -9,8 +9,8 @@ def question_list(request):
     return render(request, 'questions/question_list.html', {'questions': questions})
 
 @login_required
-def question_detail(request, question_id):
-    question = get_object_or_404(Question, id=question_id)
+def question_detail(request, pk):
+    question = get_object_or_404(Question, id=pk)
     answers = question.answers.all()
     return render(request, 'questions/question_detail.html', {'question': question, 'answers': answers})
 

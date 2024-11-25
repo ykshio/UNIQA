@@ -1,0 +1,39 @@
+<!-- questions/templates/questions/question_detail.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ question.title }}</h1>
+<p><strong>Posted by:</strong> {{ question.created_by.display_name }}</p>
+<p><strong>Created at:</strong> {{ question.created_at }}</p>
+<p><strong>Description:</strong></p>
+<p>{{ question.description }}</p>
+
+{% if question.is_resolved %}
+<p><strong>Status:</strong> Resolved</p>
+{% else %}
+<p><strong>Status:</strong> Unresolved</p>
+{% endif %}
+
+<h2>Answers</h2>
+{% if answers %}
+<ul>
+    {% for answer in answers %}
+    <li>
+        <p><strong>Answered by:</strong> {{ answer.created_by.display_name }}</p>
+        <p><strong>Created at:</strong> {{ answer.created_at }}</p>
+        <p>{{ answer.content }}</p>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No answers yet.</p>
+{% endif %}
+
+<h3>Post an Answer</h3>
+<form method="post">
+    {% csrf_token %}
+    <textarea name="content" rows="4" cols="50" placeholder="Your answer here..."></textarea><br><br>
+    <button type="submit">Submit Answer</button>
+</form>
+{% endblock %}

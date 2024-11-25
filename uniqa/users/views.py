@@ -16,6 +16,8 @@ from django.http import HttpResponse
 from django.urls import reverse
 import uuid
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from .forms import CustomUserChangeForm
 
 def signup_view(request):
     if request.method == "POST":
@@ -31,7 +33,15 @@ def profile_view(request, pk):
     return render(request, 'users/profile.html')
 
 def profile_edit_view(request):
-    return render(request, 'users/profile_edit.html')
+    if request.method == 'POST':
+        form = CustomUserChangeForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile_view')  # 編集後にプロフィールページにリダイレクト
+    else:
+        form = CustomUserChangeForm(instance=request.user)
+
+    return render(request, 'users/profile_edit.html', {'form': form})
 
 def register(request):
     if request.method == 'POST':
@@ -122,3 +132,8 @@ def login_view(request):
         else:
             return HttpResponse("ログイン失敗")
     return render(request, 'users/login.html')
+
+
+@login_required
+def profile_view(request):
+    return render(request, 'users/profile_view.html', {'user': request.user})

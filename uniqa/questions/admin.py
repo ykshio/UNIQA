@@ -4,12 +4,11 @@ from .models import Question, Answer
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('title', 'created_at', 'created_by')
-    search_fields = ('title', 'description')
+    list_display = ('title', 'created_by', 'created_at', 'is_resolved')
+    search_fields = ('title', 'description', 'created_by__display_name')
 
 @admin.register(Answer)
 class AnswerAdmin(admin.ModelAdmin):
     list_display = ('question', 'content', 'created_at', 'created_by')
     list_filter = ('question',)
-    search_fields = ('content',)
-
+    search_fields = ('content', 'created_by__display_name')

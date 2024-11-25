@@ -1,0 +1,23 @@
+<!-- users/templates/users/profile_view.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Your Profile</h1>
+
+  <p><strong>Display Name:</strong> {{ user.display_name }}</p>
+  <p><strong>Year:</strong> {{ user.year }}</p>
+  <p><strong>Department:</strong> {{ user.department }}</p>
+  <p><strong>GPA:</strong> {{ user.gpa }}</p>
+  <p><strong>Circle:</strong> {{ user.circle }}</p>
+
+  {% if user.icon %}
+    <p><strong>Profile Icon:</strong></p>
+    <img src="{{ user.icon.url }}" alt="Profile Icon" width="100" height="100">
+  {% else %}
+    <p><strong>Profile Icon:</strong> No icon uploaded</p>
+  {% endif %}
+
+  <br>
+  <a href="{% url 'users:profile_edit' %}">Edit Profile</a>
+{% endblock %}

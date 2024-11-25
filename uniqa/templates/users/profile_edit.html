@@ -1,0 +1,12 @@
+<!-- users/templates/users/profile_edit.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Edit Profile</h1>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }} <!-- フォームをパラグラフ形式で表示 -->
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
+
+{% endblock %}
