@@ -1,109 +1,89 @@
-<!-- questions/templates/questions/question_detail.html -->
-
 {% extends 'base.html' %}
 
 {% block content %}
 <div class="question-section">
     <h1>{{ question.title }}</h1>
-    <p><strong>質問者:</strong> {{ question.created_by.display_name }}</p>
-    <p><strong>質問日時:</strong> {{ question.created_at }}</p>
-    
-    <ul class="user-details">
-        <li>
-            <strong>学年:</strong> {{ question.created_by.year }}
-        </li>
-        <li>
-            <strong>学科:</strong> {{ question.created_by.department }}
-        </li>
-        <li>
-            <strong>GPA:</strong> {{ question.created_by.gpa }}
-        </li>
-        <li>
-            <strong>サークル:</strong> {{ question.created_by.circle }}
-        </li>
-    </ul>
 
-    <p><strong>質問内容:</strong></p>
-    <p>{{ question.description }}</p>
+    <div class="chat-bubble self">
+        <div class="user-info">
+            <img src="{{ question.created_by.icon.url }}" alt="User Icon" class="user-icon">
+            <div>
+                <strong>{{ question.created_by.display_name }}</strong>
+                <p>{{ question.created_by.year }}年 | {{ question.created_by.department }}</p>
+            </div>
+            <div class="m-3">
+                {% if question.is_resolved %}
+                <span class="badge bg-success">解決済み</span>
+                {% else %}
+                <span class="badge bg-warning text-dark">未解決</span>
+                {% endif %}
+            </div>
+        </div>
 
-    <div class="question-status">
-        {% if question.is_resolved %}
-        <p><strong>ステータス:</strong> 解決済</p>
-        {% else %}
-        <p><strong>ステータス:</strong> 未解決</p>
-        {% endif %}
-        
-        {% if question.created_by == request.user %}
-        <form method="post" action="{% url 'questions:toggle_resolution' question.id %}">
-            {% csrf_token %}
-            <button type="submit" class="btn-status-toggle">
-                {% if question.is_resolved %} 未解決にする {% else %} 解決済にする {% endif %}
-            </button>
-        </form>
-        {% endif %}
-        
-        {% if question.created_by == request.user %}
-        <form method="post" action="{% url 'questions:delete_question' question.id %}">
-            {% csrf_token %}
-            <button type="submit" class="btn-delete">削除</button>
-        </form>
-        {% endif %}
+        <p class="bubble-content">{{ question.description }}</p>
+        <div class="bubble-footer">
+            <span>{{ question.created_at }}</span>
+            {% if question.created_by == request.user %}
+            <form method="post" action="{% url 'questions:toggle_resolution' question.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-status-toggle">
+                    {% if question.is_resolved %}未解決にする{% else %}解決済にする{% endif %}
+                </button>
+            </form>
+            <form method="post" action="{% url 'questions:delete_question' question.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-delete">削除</button>
+            </form>
+            {% endif %}
+        </div>
     </div>
 </div>
 
-<hr>
-
 <div class="answers-section">
-    <h2>Answers</h2>
+    <h2>回答</h2>
     {% if answers %}
-    <ul class="answer-list">
-        {% for answer in answers %}
-        <li class="answer">
-            <div class="answer-header">
-                <ul class="user-details">
-                    <li><strong>回答者:</strong> {{ answer.created_by.display_name }}</li>
-                    <li><strong>回答日時:</strong> {{ answer.created_at }}</li>
-                    {% if answer.created_by == request.user %}
-                    <li>
-                        <form method="post" action="{% url 'questions:delete_answer' answer.id %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn-delete-answer">削除</button>
-                        </form>
-                    </li>
-                    {% endif %}
-                </ul>
+    {% for answer in answers %}
+    <div class="chat-bubble {% if answer.created_by == request.user %}self{% else %}other{% endif %}">
+        <div class="user-info">
+            {% if answer.created_by.icon %}
+            <img src="{{ answer.created_by.icon.url }}" alt="User Icon" class="user-icon">
+            {% else %}
+            <img src="/static/images/default_icon.png" alt="Default Icon" class="user-icon">
+            {% endif %}
+
+
+            <div>
+                <strong>{{ answer.created_by.display_name }}</strong>
+                <p>{{ answer.created_by.year }}年 | {{ answer.created_by.department }}</p>
             </div>
-            
-            <div class="answer-content">
-                <div class="answer-bubble">
-                    <p>{{ answer.content }}</p>
-                </div>
-                <div class="answer-likes">
-                    <form method="post" action="{% url 'questions:like_answer' answer.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn-like">
-                            👍 {{ answer.likes.count }}
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </li>
-        {% endfor %}
-    </ul>
+        </div>
+        <p class="bubble-content">{{ answer.content }}</p>
+        <div class="bubble-footer">
+            <span>{{ answer.created_at }}</span>
+            <form method="post" action="{% url 'questions:like_answer' answer.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-like">👍 {{ answer.likes.count }}</button>
+            </form>
+            {% if answer.created_by == request.user %}
+            <form method="post" action="{% url 'questions:delete_answer' answer.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-delete">削除</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
     {% else %}
     <p>No answers yet.</p>
     {% endif %}
 </div>
 
-<hr>
-
 <div class="answer-form-section">
-    <h3>Post an Answer</h3>
+    <h3>回答を投稿する</h3>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }} <!-- AnswerFormのフォームをレンダリング -->
-        <button type="submit">Submit Answer</button>
+        {{ form.as_p }}
+        <button type="submit" class="btn-submit">送信</button>
     </form>
 </div>
-
 {% endblock %}

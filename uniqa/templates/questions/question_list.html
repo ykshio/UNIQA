@@ -6,12 +6,14 @@
 <!-- 並び替えと絞り込みのフォーム -->
 <form method="get" class="mb-3">
     <div class="d-flex align-items-center">
+        <!-- 並び順 -->
         <label for="order" class="me-2">並び順:</label>
         <select name="order" id="order" class="form-select me-3" style="width: auto;">
             <option value="new" {% if current_order == 'new' %}selected{% endif %}>新しい順</option>
             <option value="old" {% if current_order == 'old' %}selected{% endif %}>古い順</option>
         </select>
 
+        <!-- カテゴリ -->
         <label for="category" class="me-2">カテゴリ:</label>
         <select name="category" id="category" class="form-select me-3" style="width: auto;">
             <option value="" {% if not selected_category %}selected{% endif %}>すべて</option>
@@ -22,13 +24,23 @@
             {% endfor %}
         </select>
 
+        <!-- 解決ステータス -->
+        <label for="status" class="me-2">ステータス:</label>
+        <select name="status" id="status" class="form-select me-3" style="width: auto;">
+            <option value="" {% if not selected_status %}selected{% endif %}>すべて</option>
+            <option value="resolved" {% if selected_status == 'resolved' %}selected{% endif %}>解決済み</option>
+            <option value="unresolved" {% if selected_status == 'unresolved' %}selected{% endif %}>未解決</option>
+        </select>
+
         <button type="submit" class="btn btn-primary">適用</button>
     </div>
 </form>
 
+
 <ul class="list-group">
     {% for question in questions %}
     <li class="list-group-item">
+        <!-- ユーザー情報 -->
         <a href="{% url 'users:profile_view' question.created_by.id %}" style="text-decoration: none; color: black;">
             <div class="d-flex align-items-center mb-2">
                 {% if question.created_by.icon %}
@@ -42,12 +54,17 @@
                     <strong>{{ question.created_by.display_name }}</strong>
                     <p class="mb-0" style="font-size: 0.9rem;">{{ question.created_by.year }}年 | {{ question.created_by.department }}</p>
                 </div>
+                <small class="text-muted d-block mx-3">投稿日: {{ question.created_at }}</small>
             </div>
         </a>
+        
+        <!-- 質問タイトルと説明 -->
         <a href="{% url 'questions:question_detail' question.id %}" class="text-decoration-none" style="text-decoration: none; color: black;">
             <h5 class="mb-1">{{ question.title }}</h5>
             <p>{{ question.description|truncatewords:20 }}</p>
         </a>
+
+        <!-- カテゴリバッジ -->
         {% if question.category %}
         <a href="{% url 'questions:question_list' %}?category={{ question.category.id }}" class="badge bg-primary" style="text-decoration: none;">
             {{ question.category.name }}
@@ -55,9 +72,16 @@
         {% else %}
         <span class="badge bg-secondary">カテゴリなし</span>
         {% endif %}
-        <small class="text-muted">投稿日: {{ question.created_at }}</small>
+        
+        <!-- 解決未解決ステータス -->
+        {% if question.is_resolved %}
+        <span class="badge bg-success">解決済み</span>
+        {% else %}
+        <span class="badge bg-warning text-dark">未解決</span>
+        {% endif %}
     </li>
     {% endfor %}
 </ul>
+
 
 {% endblock %}

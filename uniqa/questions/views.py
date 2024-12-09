@@ -8,7 +8,8 @@ def question_list(request):
     # 並び順パラメータ取得
     order = request.GET.get('order', 'new')  # デフォルトは新しい順
     category_id = request.GET.get('category', None)  # カテゴリID取得
-
+    status = request.GET.get('status', None)  # 解決ステータス取得
+    
     # 並び順適用
     if order == 'new':
         questions = Question.objects.order_by('-created_at')  # 新しい順
@@ -19,6 +20,12 @@ def question_list(request):
     if category_id:
         questions = questions.filter(category_id=category_id)
 
+    # 解決ステータスフィルタ適用
+    if status == 'resolved':
+        questions = questions.filter(is_resolved=True)
+    elif status == 'unresolved':
+        questions = questions.filter(is_resolved=False)
+        
     # 全カテゴリを取得（フィルタ用）
     categories = Category.objects.all()
 
@@ -107,7 +114,8 @@ def toggle_resolution(request, question_id):
     if question.created_by == request.user:
         question.is_resolved = not question.is_resolved
         question.save()
-    return redirect('questions:question_detail', question_id=question.id)
+    return redirect('questions:question_detail', pk=question.id)
+
 
 @login_required
 def delete_question(request, question_id):
@@ -133,3 +141,19 @@ def like_answer(request, answer_id):
     return redirect('questions:question_detail', question_id=answer.question.id)
 
 
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from likes.models import Like
+from .models import Answer
+
+@login_required
+def like_answer(request, answer_id):
+    answer = get_object_or_404(Answer, id=answer_id)
+    existing_like = Like.objects.filter(user=request.user, answer=answer).first()
+
+    if existing_like:
+        existing_like.delete()
+    else:
+        Like.objects.create(user=request.user, answer=answer)
+
+    return redirect('questions:question_detail', question_id=answer.question.id)
