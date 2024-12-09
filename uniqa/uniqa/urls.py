@@ -20,6 +20,8 @@ from django.views.generic import RedirectView
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LogoutView
+from django.conf import settings
+from django.conf.urls.static import static
 
 def home(request):
     # ログイン済みの場合、質問リストへリダイレクト
@@ -36,4 +38,4 @@ urlpatterns = [
     path('likes/', include('likes.urls')),
     path('', home, name='home'),
     path('logout/', LogoutView.as_view(next_page='home'), name='logout'),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

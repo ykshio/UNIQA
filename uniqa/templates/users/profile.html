@@ -3,21 +3,51 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>Your Profile</h1>
+  <div class="container mt-4">
+    <h1 class="text-center mb-4">プロフィール</h1>
 
-  <p><strong>Display Name:</strong> {{ user.display_name }}</p>
-  <p><strong>Year:</strong> {{ user.year }}</p>
-  <p><strong>Department:</strong> {{ user.department }}</p>
-  <p><strong>GPA:</strong> {{ user.gpa }}</p>
-  <p><strong>Circle:</strong> {{ user.circle }}</p>
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">ユーザー情報</h5>
 
-  {% if user.icon %}
-    <p><strong>Profile Icon:</strong></p>
-    <img src="{{ user.icon.url }}" alt="Profile Icon" width="100" height="100">
-  {% else %}
-    <p><strong>Profile Icon:</strong> No icon uploaded</p>
-  {% endif %}
+        <div class="row mb-3">
+          <div class="col-4"><strong>表示名:</strong></div>
+          <div class="col-8">{{ user.display_name }}</div>
+        </div>
 
-  <br>
-  <a href="{% url 'users:profile_edit' %}">Edit Profile</a>
+        <div class="row mb-3">
+          <div class="col-4"><strong>学年:</strong></div>
+          <div class="col-8">{{ user.year }}</div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-4"><strong>学科:</strong></div>
+          <div class="col-8">{{ user.department }}</div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-4"><strong>GPA:</strong></div>
+          <div class="col-8">{{ user.gpa }}</div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-4"><strong>学生団体:</strong></div>
+          <div class="col-8">{{ user.circle }}</div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-4"><strong>アイコン:</strong></div>
+          <div class="col-8">
+            {% if user.icon %}
+              <img src="{{ user.icon.url }}" alt="Profile Icon" class="img-fluid" style="max-width: 100px; max-height: 100px;">
+            {% else %}
+              No icon uploaded
+            {% endif %}
+          </div>
+        </div>
+
+        <a href="{% url 'users:profile_edit' %}" class="btn btn-primary mt-3">編集</a>
+      </div>
+    </div>
+  </div>
 {% endblock %}

@@ -2,13 +2,62 @@
 {% block title %}質問一覧{% endblock %}
 {% block content %}
 <h2>質問一覧</h2>
+
+<!-- 並び替えと絞り込みのフォーム -->
+<form method="get" class="mb-3">
+    <div class="d-flex align-items-center">
+        <label for="order" class="me-2">並び順:</label>
+        <select name="order" id="order" class="form-select me-3" style="width: auto;">
+            <option value="new" {% if current_order == 'new' %}selected{% endif %}>新しい順</option>
+            <option value="old" {% if current_order == 'old' %}selected{% endif %}>古い順</option>
+        </select>
+
+        <label for="category" class="me-2">カテゴリ:</label>
+        <select name="category" id="category" class="form-select me-3" style="width: auto;">
+            <option value="" {% if not selected_category %}selected{% endif %}>すべて</option>
+            {% for category in categories %}
+            <option value="{{ category.id }}" {% if selected_category == category.id %}selected{% endif %}>
+                {{ category.name }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="btn btn-primary">適用</button>
+    </div>
+</form>
+
 <ul class="list-group">
     {% for question in questions %}
-        <li class="list-group-item">
-            <a href="{% url 'questions:detail' question.id %}">{{ question.title }}</a>
+    <li class="list-group-item">
+        <a href="{% url 'users:profile_view' question.created_by.id %}" style="text-decoration: none; color: black;">
+            <div class="d-flex align-items-center mb-2">
+                {% if question.created_by.icon %}
+                <img src="{{ question.created_by.icon.url }}" alt="アイコン" class="rounded-circle"
+                    style="width: 40px; height: 40px; margin-right: 10px;">
+                {% else %}
+                <img src="/static/images/default_icon.png" alt="デフォルトアイコン" class="rounded-circle"
+                    style="width: 40px; height: 40px; margin-right: 10px;">
+                {% endif %}
+                <div>
+                    <strong>{{ question.created_by.display_name }}</strong>
+                    <p class="mb-0" style="font-size: 0.9rem;">{{ question.created_by.year }}年 | {{ question.created_by.department }}</p>
+                </div>
+            </div>
+        </a>
+        <a href="{% url 'questions:question_detail' question.id %}" class="text-decoration-none" style="text-decoration: none; color: black;">
+            <h5 class="mb-1">{{ question.title }}</h5>
             <p>{{ question.description|truncatewords:20 }}</p>
-            <small>投稿者: {{ question.created_by }} | 投稿日: {{ question.created_at }}</small>
-        </li>
+        </a>
+        {% if question.category %}
+        <a href="{% url 'questions:question_list' %}?category={{ question.category.id }}" class="badge bg-primary" style="text-decoration: none;">
+            {{ question.category.name }}
+        </a>
+        {% else %}
+        <span class="badge bg-secondary">カテゴリなし</span>
+        {% endif %}
+        <small class="text-muted">投稿日: {{ question.created_at }}</small>
+    </li>
     {% endfor %}
 </ul>
+
 {% endblock %}

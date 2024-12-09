@@ -5,15 +5,50 @@
 {% block content %}
 <div class="question-section">
     <h1>{{ question.title }}</h1>
-    {% if question.is_resolved %}
-    <p><strong>解決済</strong></p>
-    {% else %}
-    <p><strong>未解決</strong></p>
-    {% endif %}
     <p><strong>質問者:</strong> {{ question.created_by.display_name }}</p>
     <p><strong>質問日時:</strong> {{ question.created_at }}</p>
+    
+    <ul class="user-details">
+        <li>
+            <strong>学年:</strong> {{ question.created_by.year }}
+        </li>
+        <li>
+            <strong>学科:</strong> {{ question.created_by.department }}
+        </li>
+        <li>
+            <strong>GPA:</strong> {{ question.created_by.gpa }}
+        </li>
+        <li>
+            <strong>サークル:</strong> {{ question.created_by.circle }}
+        </li>
+    </ul>
+
     <p><strong>質問内容:</strong></p>
     <p>{{ question.description }}</p>
+
+    <div class="question-status">
+        {% if question.is_resolved %}
+        <p><strong>ステータス:</strong> 解決済</p>
+        {% else %}
+        <p><strong>ステータス:</strong> 未解決</p>
+        {% endif %}
+        
+        {% if question.created_by == request.user %}
+        <form method="post" action="{% url 'questions:toggle_resolution' question.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-status-toggle">
+                {% if question.is_resolved %} 未解決にする {% else %} 解決済にする {% endif %}
+            </button>
+        </form>
+        {% endif %}
+        
+        {% if question.created_by == request.user %}
+        <form method="post" action="{% url 'questions:delete_question' question.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-delete">削除</button>
+        </form>
+        {% endif %}
+    </div>
 </div>
 
 <hr>
@@ -21,12 +56,37 @@
 <div class="answers-section">
     <h2>Answers</h2>
     {% if answers %}
-    <ul>
+    <ul class="answer-list">
         {% for answer in answers %}
         <li class="answer">
-            <p><strong>回答者:</strong> {{ answer.created_by.display_name }}</p>
-            <p><strong>回答日時:</strong> {{ answer.created_at }}</p>
-            <p>{{ answer.content }}</p>
+            <div class="answer-header">
+                <ul class="user-details">
+                    <li><strong>回答者:</strong> {{ answer.created_by.display_name }}</li>
+                    <li><strong>回答日時:</strong> {{ answer.created_at }}</li>
+                    {% if answer.created_by == request.user %}
+                    <li>
+                        <form method="post" action="{% url 'questions:delete_answer' answer.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-delete-answer">削除</button>
+                        </form>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            
+            <div class="answer-content">
+                <div class="answer-bubble">
+                    <p>{{ answer.content }}</p>
+                </div>
+                <div class="answer-likes">
+                    <form method="post" action="{% url 'questions:like_answer' answer.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-like">
+                            👍 {{ answer.likes.count }}
+                        </button>
+                    </form>
+                </div>
+            </div>
         </li>
         {% endfor %}
     </ul>

@@ -21,3 +21,111 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+/* サイドバーの設定 */
+#sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 250px; /* サイドバーの幅 */
+    padding-top: 50px; /* ナビゲーションバーの高さを考慮 */
+    overflow-y: auto;
+    transition: all 0.3s ease; /* トランジション効果 */
+    z-index: 100; /* サイドバーの上に他のコンテンツが来ないように */
+}
+
+/* サイドバーが縮小された状態 */
+#sidebar.collapsed {
+    width: 80px; /* 縮小後のサイドバー幅 */
+}
+
+/* アイコンとテキストの表示を制御 */
+#sidebar .sidebar-text {
+    display: inline; /* デフォルトでは表示 */
+}
+
+/* サイドバーが縮小されたときにアイコンだけ表示する */
+#sidebar.collapsed .sidebar-text {
+    display: none;
+}
+
+#sidebar a {
+    padding-left: 20px;
+}
+
+#sidebar.collapsed a {
+    padding-left: 5px;
+}
+
+#sidebar a i {
+    margin-right: 10px;
+}
+
+/* メインコンテンツの調整 */
+main {
+    margin-left: 250px; /* サイドバーの幅を考慮 */
+    padding-top: 20px;
+}
+
+/* サイドバーが縮小された状態のメインコンテンツの調整 */
+#sidebar.collapsed + main {
+    margin-left: 80px; /* 縮小後のサイドバー幅 */
+}
+
+/* スマホ画面でもサイドバーを左側に固定 */
+@media (max-width: 768px) {
+    #sidebar {
+        position: fixed; /* 左側に固定 */
+        top: 0;
+        height: 100vh; /* 画面全体にサイドバーを表示 */
+        width: 250px; /* サイドバー幅 */
+    }
+
+    main {
+        margin-left: 250px; /* サイドバーの幅を考慮 */
+    }
+}
+
+/* ハンバーガーメニューボタンを常に表示 */
+.navbar-toggler {
+    display: inline-block;
+}
+
+
+/* 吹き出しデザイン */
+.answer-bubble {
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 15px;
+    margin-top: 5px;
+    max-width: 60%;
+    word-wrap: break-word;
+}
+
+.answer-content {
+    display: flex;
+    align-items: flex-start;
+}
+
+.answer {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.answer-likes {
+    margin-left: 10px;
+}
+
+.btn-status-toggle, .btn-delete, .btn-like, .btn-delete-answer {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-status-toggle:hover, .btn-delete:hover, .btn-like:hover, .btn-delete-answer:hover {
+    background-color: #0056b3;
+}

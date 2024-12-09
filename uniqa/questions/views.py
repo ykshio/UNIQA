@@ -1,12 +1,34 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Question, Answer
+from .models import Question, Answer, Category
 from .forms import QuestionForm, AnswerForm
 
 @login_required
 def question_list(request):
-    questions = Question.objects.all()
-    return render(request, 'questions/question_list.html', {'questions': questions})
+    # 並び順パラメータ取得
+    order = request.GET.get('order', 'new')  # デフォルトは新しい順
+    category_id = request.GET.get('category', None)  # カテゴリID取得
+
+    # 並び順適用
+    if order == 'new':
+        questions = Question.objects.order_by('-created_at')  # 新しい順
+    else:
+        questions = Question.objects.order_by('created_at')  # 古い順
+
+    # カテゴリフィルタ適用
+    if category_id:
+        questions = questions.filter(category_id=category_id)
+
+    # 全カテゴリを取得（フィルタ用）
+    categories = Category.objects.all()
+
+    context = {
+        'questions': questions,
+        'categories': categories,
+        'selected_category': int(category_id) if category_id else None,
+        'current_order': order,
+    }
+    return render(request, 'questions/question_list.html', context)
 
 @login_required
 def question_detail(request, pk):

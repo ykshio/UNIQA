@@ -11,7 +11,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
-from .models import SignupToken
+from .models import SignupToken, CustomUser
 from django.http import HttpResponse
 from django.urls import reverse
 import uuid
@@ -32,15 +32,18 @@ def signup_view(request):
 
 @login_required
 def profile_view(request, pk):
-    user = get_object_or_404(CustomUser, pk=pk)
-    return render(request, 'users/profile.html', {'user': user})
+    print(f"Received pk: {pk}")
+    user_profile = get_object_or_404(CustomUser, pk=pk)
+    return render(request, 'users/profile.html', {'profile': user_profile})
 
+@login_required
 def profile_edit_view(request):
     if request.method == 'POST':
         form = CustomUserChangeForm(request.POST, request.FILES, instance=request.user)
         if form.is_valid():
             form.save()
-            return redirect('home', pk=request.user.pk)  # 編集後にプロフィールページにリダイレクト
+            # 編集後にプロフィールページにリダイレクト
+            return redirect('users:profile_view', pk=request.user.pk)
     else:
         form = CustomUserChangeForm(instance=request.user)
 
@@ -99,6 +102,7 @@ def signup_request(request):
         return HttpResponse("認証メールを送信しました。")
     
     return render(request, "users/signup_request.html")
+
 def signup_confirm(request, token):
     try:
         signup_token = SignupToken.objects.get(token=token)
@@ -130,7 +134,3 @@ def login_view(request):
             return HttpResponse("ログイン失敗")
     return render(request, 'users/login.html')
 
-
-@login_required
-def profile_view(request):
-    return render(request, 'users/profile_view.html', {'user': request.user})
