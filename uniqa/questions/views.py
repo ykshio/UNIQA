@@ -101,3 +101,35 @@ def answer_create(request, question_id):
         form = AnswerForm()
     return render(request, 'questions/answer_form.html', {'form': form, 'question': question})
 
+@login_required
+def toggle_resolution(request, question_id):
+    question = get_object_or_404(Question, id=question_id)
+    if question.created_by == request.user:
+        question.is_resolved = not question.is_resolved
+        question.save()
+    return redirect('questions:question_detail', question_id=question.id)
+
+@login_required
+def delete_question(request, question_id):
+    question = get_object_or_404(Question, id=question_id)
+    if question.created_by == request.user:
+        question.delete()
+    return redirect('questions:question_list')
+
+@login_required
+def delete_answer(request, answer_id):
+    answer = get_object_or_404(Answer, id=answer_id)
+    if answer.created_by == request.user:
+        answer.delete()
+    return redirect('questions:question_detail', question_id=answer.question.id)
+
+@login_required
+def like_answer(request, answer_id):
+    answer = get_object_or_404(Answer, id=answer_id)
+    if request.user not in answer.likes.all():
+        answer.likes.add(request.user)
+    else:
+        answer.likes.remove(request.user)
+    return redirect('questions:question_detail', question_id=answer.question.id)
+
+

@@ -148,3 +148,5 @@ EMAIL_HOST_PASSWORD = 'pdke nxaq uhtj ghcg'    # アプリパスワード
 
 # AUTH_USER_MODEL = 'users.User'
 AUTH_USER_MODEL = 'users.CustomUser'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
