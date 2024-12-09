@@ -16,4 +16,4 @@ uniqa/likes/migrations/
 uniqa/polls/migrations/
 uniqa/questions/migrations/
 uniqa/users/migrations/
-
+uniqa/media/
