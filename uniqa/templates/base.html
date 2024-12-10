@@ -32,15 +32,17 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
-                    
                     <li class="nav-item">
-                        <!-- ユーザーのアイコン表示 -->
+                        <!-- ユーザーのアイコンと表示名表示 -->
                         <a class="nav-link" href="{% url 'users:profile_view' user.pk %}">
-                            {% if user.profile.icon %}
-                            <img src="{{ user.profile.icon.url }}" alt="User Icon" class="rounded-circle" width="30" height="30">
-                            {% else %}
-                            <img src="/static/images/default_icon.png" alt="デフォルトアイコン" class="rounded-circle" style="width: 40px; height: 40px; margin-right: 10px;">
-                            {% endif %}
+                            <div class="d-flex align-items-center">
+                                {% if user.icon %}
+                                <img src="{{ user.icon.url }}" alt="User Icon" class="rounded-circle" width="30" height="30">
+                                {% else %}
+                                <img src="/static/images/default_icon.png" alt="デフォルトアイコン" class="rounded-circle" style="width: 40px; height: 40px; margin-right: 10px;">
+                                {% endif %}
+                                <span class="ms-2">{{ user.display_name }}</span> <!-- 表示名 -->
+                            </div>
                         </a>
                     </li>
                     {% else %}

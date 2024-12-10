@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Question, Answer, Category
 from .forms import QuestionForm, AnswerForm
+from django.db.models import Count
+from django.db.models import Q
 
 @login_required
 def question_list(request):
@@ -9,12 +11,22 @@ def question_list(request):
     order = request.GET.get('order', 'new')  # デフォルトは新しい順
     category_id = request.GET.get('category', None)  # カテゴリID取得
     status = request.GET.get('status', None)  # 解決ステータス取得
-    
+    query = request.GET.get('query', '')
+
+    # 初期クエリセット（クエリに基づいて質問をフィルタ）
+    questions = Question.objects.all()
+
+    # クエリがあればタイトルと内容を検索
+    if query:
+        questions = questions.filter(
+            Q(title__icontains=query) | Q(description__icontains=query)
+        )
+
     # 並び順適用
     if order == 'new':
-        questions = Question.objects.order_by('-created_at')  # 新しい順
+        questions = questions.order_by('-created_at')  # 新しい順
     else:
-        questions = Question.objects.order_by('created_at')  # 古い順
+        questions = questions.order_by('created_at')  # 古い順
 
     # カテゴリフィルタ適用
     if category_id:
@@ -25,7 +37,7 @@ def question_list(request):
         questions = questions.filter(is_resolved=True)
     elif status == 'unresolved':
         questions = questions.filter(is_resolved=False)
-        
+
     # 全カテゴリを取得（フィルタ用）
     categories = Category.objects.all()
 
@@ -34,17 +46,28 @@ def question_list(request):
         'categories': categories,
         'selected_category': int(category_id) if category_id else None,
         'current_order': order,
+        'query': query,
     }
     return render(request, 'questions/question_list.html', context)
+
 
 @login_required
 def question_detail(request, pk):
     question = get_object_or_404(Question, pk=pk)
     answers = Answer.objects.filter(question=question)
+    sort = request.GET.get('sort', 'new')  # 並び替えパラメータ取得。デフォルトは新しい順。
+
+    # 並び替えロジック
+    if sort == 'old':
+        answers = Answer.objects.filter(question=question).order_by('created_at')  # 古い順
+    elif sort == 'likes':
+        answers = Answer.objects.filter(question=question).annotate(like_count=Count('likes')).order_by('-like_count')  # いいねが多い順
+    else:
+        answers = Answer.objects.filter(question=question).order_by('-created_at')  # 新しい順
     
     # POSTされた場合の処理
     if request.method == 'POST':
-        form = AnswerForm(request.POST)
+        form = AnswerForm(request.POST, request.FILES)
         if form.is_valid():
             answer = form.save(commit=False)
             answer.question = question
@@ -76,7 +99,7 @@ def question_create(request):
 @login_required
 def question_form(request):
     if request.method == 'POST':
-        form = QuestionForm(request.POST)
+        form = QuestionForm(request.POST, request.FILES)
         if form.is_valid():
             question = form.save(commit=False)
             question.created_by = request.user._wrapped if hasattr(request.user, '_wrapped') else request.user
@@ -131,16 +154,6 @@ def delete_answer(request, answer_id):
         answer.delete()
     return redirect('questions:question_detail', question_id=answer.question.id)
 
-@login_required
-def like_answer(request, answer_id):
-    answer = get_object_or_404(Answer, id=answer_id)
-    if request.user not in answer.likes.all():
-        answer.likes.add(request.user)
-    else:
-        answer.likes.remove(request.user)
-    return redirect('questions:question_detail', question_id=answer.question.id)
-
-
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from likes.models import Like
@@ -156,4 +169,4 @@ def like_answer(request, answer_id):
     else:
         Like.objects.create(user=request.user, answer=answer)
 
-    return redirect('questions:question_detail', question_id=answer.question.id)
+    return redirect('questions:question_detail', pk=answer.question.id)

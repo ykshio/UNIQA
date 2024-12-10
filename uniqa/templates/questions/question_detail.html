@@ -20,7 +20,10 @@
             </div>
         </div>
 
-        <p class="bubble-content">{{ question.description }}</p>
+        <p class="bubble-content">{{ question.description|linebreaksbr|urlize }}</p>
+        {% if question.image %}
+        <img src="{{ question.image.url }}" alt="質問画像" class="img-fluid">
+        {% endif %}
         <div class="bubble-footer">
             <span>{{ question.created_at }}</span>
             {% if question.created_by == request.user %}
@@ -41,6 +44,17 @@
 
 <div class="answers-section">
     <h2>回答</h2>
+    <form method="get" class="sort-form mb-3 d-flex align-items-center">
+        <label for="sort" class="me-2 mb-0">並び替え:</label>
+        <select name="sort" id="sort" class="form-select me-3" style="width: auto;">
+            <option value="new" {% if current_sort == 'new' %}selected{% endif %}>新しい順</option>
+            <option value="old" {% if current_sort == 'old' %}selected{% endif %}>古い順</option>
+            <option value="likes" {% if current_sort == 'likes' %}selected{% endif %}>いいねが多い順</option>
+        </select>
+        <button type="submit" class="btn btn-primary">適用</button>
+    </form>
+
+
     {% if answers %}
     {% for answer in answers %}
     <div class="chat-bubble {% if answer.created_by == request.user %}self{% else %}other{% endif %}">
@@ -55,9 +69,12 @@
             <div>
                 <strong>{{ answer.created_by.display_name }}</strong>
                 <p>{{ answer.created_by.year }}年 | {{ answer.created_by.department }}</p>
+                {% if answer.image %}
+                <img src="{{ answer.image.url }}" alt="質問画像" class="img-fluid">
+                {% endif %}
             </div>
         </div>
-        <p class="bubble-content">{{ answer.content }}</p>
+        <p class="bubble-content">{{ answer.content|linebreaksbr|urlize }}</p>
         <div class="bubble-footer">
             <span>{{ answer.created_at }}</span>
             <form method="post" action="{% url 'questions:like_answer' answer.id %}" style="display:inline;">

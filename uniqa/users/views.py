@@ -32,7 +32,6 @@ def signup_view(request):
 
 @login_required
 def profile_view(request, pk):
-    print(f"Received pk: {pk}")
     user_profile = get_object_or_404(CustomUser, pk=pk)
     return render(request, 'users/profile.html', {'profile': user_profile})
 

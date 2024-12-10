@@ -12,41 +12,43 @@
 
         <div class="row mb-3">
           <div class="col-4"><strong>表示名:</strong></div>
-          <div class="col-8">{{ user.display_name }}</div>
+          <div class="col-8">{{ profile.display_name }}</div>
         </div>
 
         <div class="row mb-3">
           <div class="col-4"><strong>学年:</strong></div>
-          <div class="col-8">{{ user.year }}</div>
+          <div class="col-8">{{ profile.year }}</div>
         </div>
 
         <div class="row mb-3">
           <div class="col-4"><strong>学科:</strong></div>
-          <div class="col-8">{{ user.department }}</div>
+          <div class="col-8">{{ profile.department }}</div>
         </div>
 
         <div class="row mb-3">
           <div class="col-4"><strong>GPA:</strong></div>
-          <div class="col-8">{{ user.gpa }}</div>
+          <div class="col-8">{{ profile.gpa }}</div>
         </div>
 
         <div class="row mb-3">
           <div class="col-4"><strong>学生団体:</strong></div>
-          <div class="col-8">{{ user.circle }}</div>
+          <div class="col-8">{{ profile.circle }}</div>
         </div>
 
         <div class="row mb-3">
           <div class="col-4"><strong>アイコン:</strong></div>
           <div class="col-8">
-            {% if user.icon %}
-              <img src="{{ user.icon.url }}" alt="Profile Icon" class="img-fluid" style="max-width: 100px; max-height: 100px;">
+            {% if profile.icon %}
+              <img src="{{ profile.icon.url }}" alt="Profile Icon" class="img-fluid" style="max-width: 100px; max-height: 100px;">
             {% else %}
               No icon uploaded
             {% endif %}
           </div>
         </div>
 
-        <a href="{% url 'users:profile_edit' %}" class="btn btn-primary mt-3">編集</a>
+        {% if request.user == profile %}
+          <a href="{% url 'users:profile_edit' %}" class="btn btn-primary mt-3">編集</a>
+        {% endif %}
       </div>
     </div>
   </div>

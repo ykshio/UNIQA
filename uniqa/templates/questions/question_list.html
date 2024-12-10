@@ -34,6 +34,12 @@
 
         <button type="submit" class="btn btn-primary">適用</button>
     </div>
+    <div class="d-flex align-items-center mt-2">
+        <form method="get" action="{% url 'questions:question_list' %}" class="d-flex mb-3">
+            <input type="text" name="query" class="form-control me-2" placeholder="質問を検索" value="{{ request.GET.query }}">
+            <button type="submit" class="btn btn-primary">検索</button>
+        </form>
+    </div>        
 </form>
 
 
@@ -61,7 +67,7 @@
         <!-- 質問タイトルと説明 -->
         <a href="{% url 'questions:question_detail' question.id %}" class="text-decoration-none" style="text-decoration: none; color: black;">
             <h5 class="mb-1">{{ question.title }}</h5>
-            <p>{{ question.description|truncatewords:20 }}</p>
+            <p>{{ question.description|truncatewords:20|linebreaks|urlize }}</p>
         </a>
 
         <!-- カテゴリバッジ -->
