@@ -126,7 +126,7 @@ def answer_create(request, question_id):
             answer.question = question
             answer.created_by = request.user
             answer.save()
-            return redirect('questions:question_detail', question_id=question.id)
+            return redirect('questions:question_detail', pk=answer.question.id)
     else:
         form = AnswerForm()
     return render(request, 'questions/answer_form.html', {'form': form, 'question': question})
@@ -152,7 +152,7 @@ def delete_answer(request, answer_id):
     answer = get_object_or_404(Answer, id=answer_id)
     if answer.created_by == request.user:
         answer.delete()
-    return redirect('questions:question_detail', question_id=answer.question.id)
+    return redirect('questions:question_detail', pk=answer.question.id)
 
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
