@@ -1,7 +1,21 @@
-<h2>ログイン</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">ログイン</button>
-</form>
-<p><a href="{% url 'users:signup' %}">新規登録はこちら</a></p>
+{% extends 'base.html' %}
+
+{% block title %}ログイン - UNIQA{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="text-center mb-4">ログイン</h2>
+            <form method="post" class="card p-4 shadow-sm">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary w-100">ログイン</button>
+            </form>
+            <p class="text-center mt-3">
+                <a href="{% url 'users:signup' %}">新規登録はこちら</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

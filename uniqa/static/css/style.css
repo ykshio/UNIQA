@@ -63,8 +63,8 @@ button:hover {
 
 /* メインコンテンツの調整 */
 main {
-    margin-left: 250px; /* サイドバーの幅を考慮 */
-    padding-top: 20px;
+    margin:0px;
+    padding:0px;
 }
 
 /* サイドバーが縮小された状態のメインコンテンツの調整 */
@@ -200,3 +200,16 @@ main {
     color: #fff;
 }
 
+@media (max-width: 768px) {
+    #sidebar {
+        display: none;
+    }
+    #sidebar.collapsed {
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 100vh;
+        background-color: #f8f9fa;
+        z-index: 1050;
+    }
+}

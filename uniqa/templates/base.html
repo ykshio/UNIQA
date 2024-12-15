@@ -14,17 +14,14 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="z-index: 1000;">
-        <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
             {% if user.is_authenticated %}
-            <!-- ハンバーガーメニュー ボタン -->
-            <button  class="bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarToggle"
-                aria-controls="sidebarToggle" aria-expanded="false" aria-label="Toggle sidebar">
+            <button class="bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarToggle" aria-controls="sidebarToggle" aria-expanded="false" aria-label="Toggle sidebar">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            {% else %}
             {% endif %}
-            <a class="navbar-brand ms-2" href="/"><img src="{% static 'images/UNIQA_white.png' %}" width="100px"></a>
+            <a class="navbar-brand" href="/"><img src="{% static 'images/UNIQA_white.png' %}" width="100px"></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -33,17 +30,18 @@
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <!-- ユーザーのアイコンと表示名表示 -->
                         <a class="nav-link" href="{% url 'users:profile_view' user.pk %}">
                             <div class="d-flex align-items-center">
                                 {% if user.icon %}
                                 <img src="{{ user.icon.url }}" alt="User Icon" class="rounded-circle" width="30" height="30">
                                 {% else %}
-                                <img src="/static/images/default_icon.png" alt="デフォルトアイコン" class="rounded-circle" style="width: 40px; height: 40px; margin-right: 10px;">
+                                <img src="/static/images/default_icon.png" alt="デフォルトアイコン" class="rounded-circle"
+                                    style="width: 40px; height: 40px; margin-right: 10px;">
                                 {% endif %}
-                                <span class="ms-2">{{ user.display_name }}</span> <!-- 表示名 -->
+                                <span class="ms-2">{{ user.display_name }}</span>
                             </div>
                         </a>
+
                     </li>
                     {% else %}
                     <li class="nav-item">
@@ -57,9 +55,11 @@
             </div>
         </div>
     </nav>
-    {% if user.is_authenticated %}
+
+
     <div class="container-fluid mt-4">
         <div class="row">
+            {% if user.is_authenticated %}
             <!-- サイドバー -->
             <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar fixed-top">
                 <div class="position-sticky pt-5">
@@ -88,29 +88,30 @@
                             <form action="{% url 'users:logout' %}" method="POST">
                                 {% csrf_token %}
                                 <button type="submit" class="nav-link btn btn-link">
-                                    <i class="bi bi-box-arrow-right" style="margin-right: 8px; margin-left:5px;"></i> <span class="sidebar-text">ログアウト</span>
+                                    <i class="bi bi-box-arrow-right"></i> <span class="sidebar-text">ログアウト</span>
                                 </button>
                             </form>
                         </li>
                     </ul>
                 </div>
             </nav>
-            
-            {% else %}
-            {% endif %}
-            <!-- メインコンテンツ -->
+            <!-- メインコンテンツ（サイドバーあり） -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" style="margin-top: 60px;">
-                {% block content %}{% endblock %}
-            </main>
+                {% else %}
+                <!-- メインコンテンツ（サイドバーなし） -->
+                <main class="m-0" style="margin-top: 60px;">
+                    {% endif %}
+                    <div class="row">
+                    {% block content %}{% endblock %}
+                    </div>
+                </main>
         </div>
     </div>
-
-    <!-- スクリプト -->
     <script>
         // ハンバーガーメニューによるサイドバーのトグル
         const sidebar = document.getElementById('sidebar');
         const sidebarToggle = document.querySelector('[data-bs-target="#sidebarToggle"]');
-        sidebarToggle.addEventListener('click', function() {
+        sidebarToggle.addEventListener('click', function () {
             sidebar.classList.toggle('collapsed');
         });
     </script>
