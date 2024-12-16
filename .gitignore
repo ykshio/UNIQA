@@ -17,3 +17,8 @@ uniqa/polls/migrations/
 uniqa/questions/migrations/
 uniqa/users/migrations/
 uniqa/media/
+
+# Terraform
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+
