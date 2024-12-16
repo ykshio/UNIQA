@@ -73,6 +73,13 @@ def signup_request(request):
     if request.method == "POST":
         email = request.POST.get("email")
         
+        # メールアドレスのドメイン部分を確認
+        allowed_domain = 'dendai.ac.jp'
+        domain = email.split('@')[-1]
+        
+        if not domain.endswith(allowed_domain):
+            return HttpResponse("dendai.ac.jpドメインのメールアドレスのみ登録できます。")
+        
         # メールアドレスが既に登録されているか確認
         if User.objects.filter(email=email).exists():
             return HttpResponse("このメールアドレスはすでに登録されています。")

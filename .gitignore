@@ -19,6 +19,6 @@ uniqa/users/migrations/
 uniqa/media/
 
 # Terraform
-terraform/terraform.tfstate
-terraform/terraform.tfstate.backup
-
+uniqa/terraform/terraform.tfstate
+uniqa/terraform/terraform.tfstate.backup
+uniqa/terraform/.terraform/
