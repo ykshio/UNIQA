@@ -45,9 +45,47 @@ resource "aws_instance" "uniqa" {
   key_name      = "MacAWS"
   security_groups = [aws_security_group.allow_ssh_http.name]
 
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo yum update -y
+
+              # gitのインストール
+              sudo yum install -y git
+
+              # python3のインストール
+              sudo yum install -y python3
+
+              # pipのインストール 
+              sudo yum install -y python3-pip
+
+              # Nginxのインストール
+              sudo yum install -y nginx
+
+              # GitHubからソースコードを取得
+              git clone https://github.com/ykshio/UNIQA.git /home/ec2-user/uniqa
+
+              # 必要なPythonライブラリのインストール
+              cd /home/ec2-user/uniqa
+              pip3 install -r requirements.txt
+
+              # Nginxの起動
+              systemctl start nginx
+              systemctl enable nginx
+
+              # その他、UNIQA用のセットアップを実行（例: Djangoのマイグレーションなど）
+              cd /home/ec2-user/uniqa
+              python3 manage.py migrate
+              python3 manage.py collectstatic --noinput
+
+              EOF
   tags = {
     Name = "UNIQA"
   }
   
 }
+
 # Elastic IPの作成
+resource "aws_eip" "uniqa_eip" {
+  instance = aws_instance.uniqa.id
+}
+
