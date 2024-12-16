@@ -40,9 +40,9 @@ resource "aws_security_group" "allow_ssh_http" {
 
 # EC2インスタンスの作成
 resource "aws_instance" "uniqa" {
-  ami           = "ami-0146fc9ad419e2cfd"
-  instance_type = "t2.micro"
-  key_name      = "MacAWS"
+  ami             = "ami-0146fc9ad419e2cfd"
+  instance_type   = "t2.micro"
+  key_name        = "MacAWS"
   security_groups = [aws_security_group.allow_ssh_http.name]
 
   user_data = <<-EOF
@@ -77,11 +77,17 @@ resource "aws_instance" "uniqa" {
               python3 manage.py migrate
               python3 manage.py collectstatic --noinput
 
+              # Wait for cloud-init to finish
+              while [ -f /var/lib/cloud/instance/boot-finished ]; do sleep 1; done
+
+              # 再度、nginxを起動
+              systemctl restart nginx
+              
               EOF
   tags = {
     Name = "UNIQA"
   }
-  
+
 }
 
 # Elastic IPの作成
