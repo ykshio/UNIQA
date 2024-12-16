@@ -16,4 +16,8 @@ class AnswerForm(forms.ModelForm):
     class Meta:
         model = Answer
         fields = ('content','image')
+        labels = {
+            'content':'回答内容',
+            'image': '画像',
+        }
 

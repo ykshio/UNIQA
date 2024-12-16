@@ -17,9 +17,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container-fluid">
             {% if user.is_authenticated %}
-            <button class="bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarToggle" aria-controls="sidebarToggle" aria-expanded="false" aria-label="Toggle sidebar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+
             {% endif %}
             <a class="navbar-brand" href="/"><img src="{% static 'images/UNIQA_white.png' %}" width="100px"></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -33,7 +31,8 @@
                         <a class="nav-link" href="{% url 'users:profile_view' user.pk %}">
                             <div class="d-flex align-items-center">
                                 {% if user.icon %}
-                                <img src="{{ user.icon.url }}" alt="User Icon" class="rounded-circle" width="30" height="30">
+                                <img src="{{ user.icon.url }}" alt="User Icon" class="rounded-circle" width="30"
+                                    height="30">
                                 {% else %}
                                 <img src="/static/images/default_icon.png" alt="デフォルトアイコン" class="rounded-circle"
                                     style="width: 40px; height: 40px; margin-right: 10px;">
@@ -41,7 +40,6 @@
                                 <span class="ms-2">{{ user.display_name }}</span>
                             </div>
                         </a>
-
                     </li>
                     {% else %}
                     <li class="nav-item">
@@ -56,33 +54,37 @@
         </div>
     </nav>
 
-
     <div class="container-fluid mt-4">
         <div class="row">
             {% if user.is_authenticated %}
             <!-- サイドバー -->
-            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar fixed-top">
+            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar fixed-top collapsed">
                 <div class="position-sticky pt-5">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="{% url 'home' %}">
+                            <button class="nav-link btn btn-link" id="sidebarToggle" type="button">
+                                &gt;
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link btn btn-link" data-href="{% url 'home' %}">
                                 <i class="bi bi-house-door"></i> <span class="sidebar-text">ホーム</span>
-                            </a>
+                            </button>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'questions:question_form' %}">
+                            <button class="nav-link btn btn-link" data-href="{% url 'questions:question_form' %}">
                                 <i class="bi bi-plus-circle"></i> <span class="sidebar-text">新しい質問を投稿</span>
-                            </a>
+                            </button>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'users:profile_view' user.pk %}">
+                            <button class="nav-link btn btn-link" data-href="{% url 'users:profile_view' user.pk %}">
                                 <i class="bi bi-person"></i> <span class="sidebar-text">マイプロフィール</span>
-                            </a>
+                            </button>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'users:profile_edit' %}">
+                            <button class="nav-link btn btn-link" data-href="{% url 'users:profile_edit' %}">
                                 <i class="bi bi-gear"></i> <span class="sidebar-text">アカウント設定</span>
-                            </a>
+                            </button>
                         </li>
                         <li class="nav-item">
                             <form action="{% url 'users:logout' %}" method="POST">
@@ -95,26 +97,48 @@
                     </ul>
                 </div>
             </nav>
-            <!-- メインコンテンツ（サイドバーあり） -->
+
+            <!-- メインコンテンツ -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" style="margin-top: 60px;">
                 {% else %}
-                <!-- メインコンテンツ（サイドバーなし） -->
                 <main class="m-0" style="margin-top: 60px;">
                     {% endif %}
                     <div class="row">
-                    {% block content %}{% endblock %}
+                        {% block content %}{% endblock %}
                     </div>
                 </main>
         </div>
     </div>
+
     <script>
-        // ハンバーガーメニューによるサイドバーのトグル
         const sidebar = document.getElementById('sidebar');
-        const sidebarToggle = document.querySelector('[data-bs-target="#sidebarToggle"]');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+
+        // サイドバーの開閉状態をトグル
         sidebarToggle.addEventListener('click', function () {
             sidebar.classList.toggle('collapsed');
+            // ボタンのテキストを変更
+            if (sidebar.classList.contains('collapsed')) {
+                sidebarToggle.textContent = '>';
+            } else {
+                sidebarToggle.textContent = '< サイドバーを閉じる';
+            }
         });
+        // ボタンをすべて取得
+        const navButtons = document.querySelectorAll('#sidebar .nav-link.btn');
+
+        // 各ボタンにクリックイベントを追加
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetUrl = button.getAttribute('data-href');
+                if (targetUrl) {
+                    window.location.href = targetUrl;
+                }
+            });
+        });
+
     </script>
 </body>
+
 
 </html>

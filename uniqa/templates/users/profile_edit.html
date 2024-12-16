@@ -1,12 +1,37 @@
-<!-- users/templates/users/profile_edit.html -->
 {% extends 'base.html' %}
 
-{% block content %}
-<h1>Edit Profile</h1>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }} <!-- フォームをパラグラフ形式で表示 -->
-    <button type="submit" class="btn btn-primary">Save Changes</button>
-</form>
+{% block title %}プロフィール編集{% endblock %}
 
+{% block content %}
+<div class="profile-edit-section">
+    <h1 class="mb-4">プロフィール編集</h1>
+    <form method="post" enctype="multipart/form-data" class="form-container">
+        {% csrf_token %}
+        <div class="form-group mb-3">
+            {{ form.display_name.label_tag }}
+            {{ form.display_name }}
+        </div>
+        <div class="form-group mb-3">
+            {{ form.year.label_tag }}
+            {{ form.year }}
+        </div>
+        <div class="form-group mb-3">
+            {{ form.department.label_tag }}
+            {{ form.department }}
+        </div>
+        <div class="form-group mb-3">
+            {{ form.icon.label_tag }}
+            {{ form.icon }}
+        </div>
+        <div class="form-group mb-3">
+            {{ form.gpa.label_tag }}
+            {{ form.gpa }}
+        </div>
+        <div class="form-group mb-3">
+            {{ form.circle.label_tag }}
+            {{ form.circle }}
+        </div>
+        <button type="submit" class="btn btn-primary">保存する</button>
+    </form>
+</div>
 {% endblock %}
