@@ -12,13 +12,13 @@ env/
 docker-compose.override.yml
 
 # Ignore migration files
-uniqa/likes/migrations/
-uniqa/polls/migrations/
-uniqa/questions/migrations/
-uniqa/users/migrations/
-uniqa/media/
+src/uniqa/likes/migrations/
+src/uniqa/polls/migrations/
+src/uniqa/questions/migrations/
+src/uniqa/users/migrations/
+src/uniqa/media/
 
 # Terraform
-uniqa/terraform/terraform.tfstate
-uniqa/terraform/terraform.tfstate.backup
-uniqa/terraform/.terraform/
+src/uniqa/terraform/terraform.tfstate
+src/uniqa/terraform/terraform.tfstate.backup
+src/uniqa/terraform/.terraform/
