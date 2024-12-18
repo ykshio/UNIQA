@@ -1,0 +1,53 @@
+services:
+  django:
+    build:
+      context: .    # Dockerfileがあるディレクトリまでの相対パス
+      dockerfile: Dockerfile   # Dockerfileのファイル名
+
+    container_name: uniqa_django  # コンテナ名
+
+    ports:
+      - "8000:8000"
+    
+    tty: true
+
+    volumes:
+      - ./src/uniqa:/root/workspace/src/uniqa  # ローカルの作業ディレクトリと仮想環境の作業ディレクトリの対応づけ
+
+    environment:
+      - DEBUG=True
+      - COMPOSE_HTTP_TIMEOUT=200
+      - COMPOSE_LOG_LEVEL=DEBUG
+
+    env_file:
+      - .env  # .envファイルを指定
+
+    command: ["python", "src/uniqa/manage.py", "runserver", "0.0.0.0:8000"]
+
+# ヘルパーサービスを追加
+  makemigrations:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: uniqa_makemigrations
+    command: ["python", "src/uniqa/manage.py", "makemigrations"]
+    volumes:
+      - ./src/uniqa:/root/workspace/src/uniqa
+
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: uniqa_migrate
+    command: ["python", "src/uniqa/manage.py", "migrate"]
+    volumes:
+      - ./src/uniqa:/root/workspace/src/uniqa
+
+  createsuperuser:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: uniqa_createsuperuser
+    command: ["python", "src/uniqa/manage.py", "createsuperuser"]
+    volumes:
+      - ./src/uniqa:/root/workspace/src/uniqa
