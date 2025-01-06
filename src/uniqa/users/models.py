@@ -9,7 +9,7 @@ class CustomUser(AbstractUser):
     year = models.PositiveIntegerField(blank=True, null=True)
     department = models.CharField(max_length=100)
     icon = models.ImageField(upload_to='icons/', null=True, blank=True)
-    gpa = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True)
+    gpa = models.DecimalField(max_digits=4, decimal_places=3, blank=True, null=True)
     circle = models.CharField(max_length=100, blank=True, null=True)
     
     groups = models.ManyToManyField(
