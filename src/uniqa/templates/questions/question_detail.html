@@ -96,8 +96,11 @@
             {% endif %}
             <form method="post" action="{% url 'questions:like_answer' answer.id %}" style="display:inline;">
                 {% csrf_token %}
-                <button type="submit" class="btn-like">👍 {{ answer.likes.count }}</button>
+                <button type="submit" class="btn-like {% if request.user in answer.likes.all %}btn-liked{% endif %}">
+                    👍 {{ answer.likes.count }}
+                </button>
             </form>
+            
 
         </div>
     </div>

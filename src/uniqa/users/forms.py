@@ -11,10 +11,13 @@ class CustomUserCreationForm(UserCreationForm):
 
 class CustomUserChangeForm(UserChangeForm):
     YEAR_CHOICES = [
-        (1, '1年'),
-        (2, '2年'),
-        (3, '3年'),
-        (4, '4年'),
+        (1, '学部1年'),
+        (2, '学部2年'),
+        (3, '学部3年'),
+        (4, '学部4年'),
+        (5, '院生'),
+        (6, '卒業生'),
+        (7, '教職員'),
     ]
     
     DEPARTMENT_CHOICES = [
