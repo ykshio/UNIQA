@@ -1,9 +1,7 @@
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
-from .models import CustomUser
 from .forms import CustomUserCreationForm
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -15,10 +13,8 @@ from .models import SignupToken, CustomUser
 from django.http import HttpResponse
 from django.urls import reverse
 import uuid
-from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserChangeForm
-from django.shortcuts import render, get_object_or_404
 
 def signup_view(request):
     if request.method == "POST":
@@ -126,17 +122,3 @@ def signup_confirm(request, token):
         signup_token.delete()
         return redirect("users:login")
     return render(request, "users/signup_confirm.html", {"token": token})
-
-def login_view(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-
-        user = authenticate(request, username=email, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('profile')  # ユーザープロフィール画面にリダイレクト
-        else:
-            return HttpResponse("ログイン失敗")
-    return render(request, 'users/login.html')
-

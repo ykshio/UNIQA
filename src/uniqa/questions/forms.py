@@ -9,7 +9,7 @@ class QuestionForm(forms.ModelForm):
             'title': 'タイトル',
             'description': '質問内容',
             'category': 'カテゴリ',
-            'image': '画像',
+            #'image': '画像',
         }
 
 class AnswerForm(forms.ModelForm):
@@ -18,6 +18,6 @@ class AnswerForm(forms.ModelForm):
         fields = ('content','image')
         labels = {
             'content':'回答内容',
-            'image': '画像',
+            #'image': '画像',
         }
 
