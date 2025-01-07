@@ -45,6 +45,7 @@ def question_list(request):
         'questions': questions,
         'categories': categories,
         'selected_category': int(category_id) if category_id else None,
+        'selected_status': status,
         'current_order': order,
         'query': query,
     }

@@ -1,6 +1,8 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import CustomUser
+from PIL import Image
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
@@ -27,7 +29,6 @@ class CustomUserChangeForm(UserChangeForm):
         ('FA', '未来科学部建築学科'),
         ('FI', '未来科学部情報メディア学科'),
         ('FR', '未来科学部ロボット・メカトロニクス学科'),
-        # 必要に応じて他の学科を追加
     ]
 
     year = forms.ChoiceField(choices=YEAR_CHOICES, required=False, label='学年')
@@ -44,3 +45,20 @@ class CustomUserChangeForm(UserChangeForm):
             'gpa': 'GPA',
             'circle': '所属サークル',
         }
+
+    def clean_gpa(self):
+        gpa = self.cleaned_data.get('gpa')
+        if gpa is not None and (gpa < 0 or gpa > 4):
+            raise ValidationError('GPAは0以上4以下である必要があります。')
+        return gpa
+
+    def clean_icon(self):
+        icon = self.cleaned_data.get('icon')
+        if icon:
+            try:
+                img = Image.open(icon)
+                if img.size != (128, 128):
+                    raise ValidationError('アイコン画像のサイズは128x128である必要があります。')
+            except Exception:
+                raise ValidationError('有効な画像ファイルをアップロードしてください。')
+        return icon

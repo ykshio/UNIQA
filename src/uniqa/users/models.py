@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 import uuid
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
@@ -9,7 +10,7 @@ class CustomUser(AbstractUser):
     year = models.PositiveIntegerField(blank=True, null=True)
     department = models.CharField(max_length=100)
     icon = models.ImageField(upload_to='icons/', null=True, blank=True)
-    gpa = models.DecimalField(max_digits=4, decimal_places=3, blank=True, null=True)
+    gpa = models.DecimalField(max_digits=4, decimal_places=3, blank=True, null=True, validators=[MinValueValidator(0.0), MaxValueValidator(4.0) ] )
     circle = models.CharField(max_length=100, blank=True, null=True)
     
     groups = models.ManyToManyField(

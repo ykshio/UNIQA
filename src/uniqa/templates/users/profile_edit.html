@@ -20,13 +20,24 @@
             {{ form.department }}
         </div>
         <div class="form-group mb-3">
-            {{ form.icon.label_tag }}
-            {{ form.icon }}
-        </div>
-        <div class="form-group mb-3">
             {{ form.gpa.label_tag }}
             {{ form.gpa }}
+            {% if form.gpa.errors %}
+                <div class="error">
+                    {{ form.gpa.errors }}
+                </div>
+            {% endif %}
         </div>
+        <div class="form-group mb-3">
+            {{ form.icon.label_tag }}
+            {{ form.icon }}
+            {% if form.icon.errors %}
+                <div class="error">
+                    {{ form.icon.errors }}
+                </div>
+            {% endif %}
+        </div>
+        
         <div class="form-group mb-3">
             {{ form.circle.label_tag }}
             {{ form.circle }}
