@@ -50,7 +50,7 @@ class CustomUserChangeForm(UserChangeForm):
             'display_name': '表示名',
             'year': '学年',
             'department': '学科',
-            'icon': 'アイコン',
+            'icon': 'アイコン(最大サイズ：128px × 128px)',
             'gpa': 'GPA',
             'circle': '所属サークル',
         }
