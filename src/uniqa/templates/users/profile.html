@@ -3,53 +3,115 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <div class="container mt-4">
-    <h1 class="text-center mb-4">プロフィール</h1>
+<div class="container mt-4">
+  <h1 class="text-center mb-4">プロフィール</h1>
 
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">ユーザー情報</h5>
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">ユーザー情報</h5>
 
-        <div class="row mb-3">
-          <div class="col-4"><strong>表示名:</strong></div>
-          <div class="col-8">{{ profile.display_name }}</div>
+      <div class="row mb-3">
+        <div class="col-4"><strong>表示名:</strong></div>
+        <div class="col-8">{{ profile.display_name }}</div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-4"><strong>学年:</strong></div>
+        <div class="col-8">{{ profile.get_year_display }}</div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-4"><strong>学科:</strong></div>
+        <div class="col-8">{{ profile.department }}</div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-4"><strong>GPA:</strong></div>
+        <div class="col-8">{{ profile.gpa }}</div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-4"><strong>学生団体:</strong></div>
+        <div class="col-8">{{ profile.circle }}</div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-4"><strong>アイコン:</strong></div>
+        <div class="col-8">
+          {% if profile.icon %}
+          <img src="{{ profile.icon.url }}" alt="Profile Icon" class="img-fluid"
+            style="max-width: 100px; max-height: 100px;">
+          {% else %}
+          No icon uploaded
+          {% endif %}
         </div>
+      </div>
 
-        <div class="row mb-3">
-          <div class="col-4"><strong>学年:</strong></div>
-          <div class="col-8">{{ profile.year }}</div>
-        </div>
+      {% if request.user == profile %}
+      <a href="{% url 'users:profile_edit' %}" class="btn btn-primary mt-3">編集</a>
+      {% endif %}
+    </div>
+  </div>
+  <!-- タブのヘッダー -->
+  <ul class="nav nav-tabs mt-4" id="profileTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="questions-tab" data-bs-toggle="tab" data-bs-target="#questions" type="button"
+        role="tab" aria-controls="questions" aria-selected="true">
+        質問
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="answers-tab" data-bs-toggle="tab" data-bs-target="#answers" type="button" role="tab"
+        aria-controls="answers" aria-selected="false">
+        回答
+      </button>
+    </li>
+  </ul>
 
-        <div class="row mb-3">
-          <div class="col-4"><strong>学科:</strong></div>
-          <div class="col-8">{{ profile.department }}</div>
-        </div>
+  <!-- タブのコンテンツ -->
+  <div class="tab-content" id="profileTabContent">
+    <!-- 質問タブ -->
+    <div class="tab-pane fade show active" id="questions" role="tabpanel" aria-labelledby="questions-tab">
+      <div class="mt-4">
+        <h2>投稿した質問</h2>
+        {% if questions %}
+        <ul class="list-group">
+          {% for question in questions %}
+          <li class="list-group-item">
+            <a href="{% url 'questions:question_detail' question.id %}">{{ question.title }}</a>
+            <span class="badge bg-primary ms-2">{{ question.answers.count }} 回答</span>
+            <small class="text-muted"> - {{ question.created_at|date:"Y/m/d H:i" }}</small>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p>質問がまだ投稿されていません。</p>
+        {% endif %}
+      </div>
+    </div>
 
-        <div class="row mb-3">
-          <div class="col-4"><strong>GPA:</strong></div>
-          <div class="col-8">{{ profile.gpa }}</div>
-        </div>
-
-        <div class="row mb-3">
-          <div class="col-4"><strong>学生団体:</strong></div>
-          <div class="col-8">{{ profile.circle }}</div>
-        </div>
-
-        <div class="row mb-3">
-          <div class="col-4"><strong>アイコン:</strong></div>
-          <div class="col-8">
-            {% if profile.icon %}
-              <img src="{{ profile.icon.url }}" alt="Profile Icon" class="img-fluid" style="max-width: 100px; max-height: 100px;">
-            {% else %}
-              No icon uploaded
-            {% endif %}
-          </div>
-        </div>
-
-        {% if request.user == profile %}
-          <a href="{% url 'users:profile_edit' %}" class="btn btn-primary mt-3">編集</a>
+    <!-- 回答タブ -->
+    <div class="tab-pane fade" id="answers" role="tabpanel" aria-labelledby="answers-tab">
+      <div class="mt-4">
+        <h2>投稿した回答</h2>
+        {% if answers %}
+        <ul class="list-group">
+          {% for answer in answers %}
+          <li class="list-group-item">
+            質問: <a href="{% url 'questions:question_detail' answer.question.id %}">{{ answer.question.title }}</a><br>
+            質問者: <a href="{% url 'users:profile_view' answer.question.created_by.id %}">
+              {{ answer.question.created_by.display_name }}
+          </a><br>
+            回答: {{ answer.content|truncatewords:20 }}
+            <small class="text-muted"> - {{ answer.created_at|date:"Y/m/d H:i" }}</small>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p>回答がまだ投稿されていません。</p>
         {% endif %}
       </div>
     </div>
   </div>
+</div>
 {% endblock %}

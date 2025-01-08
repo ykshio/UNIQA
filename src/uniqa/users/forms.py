@@ -36,6 +36,12 @@ class CustomUserChangeForm(UserChangeForm):
 
     year = forms.ChoiceField(choices=YEAR_CHOICES, required=False, label='学年')
     department = forms.ChoiceField(choices=DEPARTMENT_CHOICES, required=False, label='学科')
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # year の表示を更新する
+        if self.instance.pk:
+            self.fields['year'].initial = self.instance.get_year_display()
 
     class Meta:
         model = CustomUser
