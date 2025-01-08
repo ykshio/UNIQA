@@ -44,13 +44,14 @@
     </div>
 
     <!-- 適用ボタン -->
-    
+
 
     <!-- 検索欄 -->
     <div class="search-group d-flex align-items-center mb-3" style="flex-wrap: nowrap;">
         <label for="query" class="me-2" style="white-space: nowrap;">検索:</label>
         <div class="input-group" style="flex-grow: 1;">
-            <input type="text" name="query" id="query" class="form-control" placeholder="質問を検索" value="{{ request.GET.query }}">
+            <input type="text" name="query" id="query" class="form-control" placeholder="質問を検索"
+                value="{{ request.GET.query }}">
             <button type="submit" class="btn btn-primary">検索</button>
         </div>
     </div>
@@ -74,34 +75,53 @@
                     style="width: 40px; height: 40px; margin-right: 10px;">
                 {% endif %}
                 <div>
-                    <strong>{{ question.created_by.display_name }}</strong>
-                    <p class="mb-0" style="font-size: 0.9rem;">{{ question.created_by.year }}年 | {{ question.created_by.department }}</p>
+                    <strong>
+                        {% if question.created_by.display_name %}
+                        {{ question.created_by.display_name }}
+                        {% else %}
+                        {{ question.created_by.username }}
+                        {% endif %}
+                    </strong>
+                    
+                    <p class="mb-0" style="font-size: 0.9rem;">
+                        {% if question.created_by.get_year_display %}
+                        {{ question.created_by.get_year_display }} 
+                        {% endif %}
+                        {% if question.created_by.department %}
+                        | {{ question.created_by.department }}
+                        {% endif %}
+                    </p>
+                    
                 </div>
                 <small class="text-muted d-block mx-3">投稿日: {{ question.created_at }}</small>
+
             </div>
         </a>
-        
+
         <!-- 質問タイトルと説明 -->
-        <a href="{% url 'questions:question_detail' question.id %}" class="text-decoration-none" style="text-decoration: none; color: black;">
+        <a href="{% url 'questions:question_detail' question.id %}" class="text-decoration-none"
+            style="text-decoration: none; color: black;">
             <h5 class="mb-1">{{ question.title }}</h5>
             <p>{{ question.description|truncatewords:20|linebreaks|urlize }}</p>
         </a>
 
         <!-- カテゴリバッジ -->
         {% if question.category %}
-        <a href="{% url 'questions:question_list' %}?category={{ question.category.id }}" class="badge bg-primary" style="text-decoration: none;">
+        <a href="{% url 'questions:question_list' %}?category={{ question.category.id }}" class="badge bg-primary"
+            style="text-decoration: none;">
             {{ question.category.name }}
         </a>
         {% else %}
         <span class="badge bg-secondary">カテゴリなし</span>
         {% endif %}
-        
+
         <!-- 解決未解決ステータス -->
         {% if question.is_resolved %}
         <span class="badge bg-success">解決済み</span>
         {% else %}
         <span class="badge bg-warning text-dark">未解決</span>
         {% endif %}
+        <span class="badge bg-primary ms-2">{{ question.answers.count }} 回答</span>
     </li>
     {% endfor %}
 </ul>

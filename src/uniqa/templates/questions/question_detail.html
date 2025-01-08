@@ -5,24 +5,34 @@
     <h1>{{ question.title }}</h1>
 
     <div class="chat-bubble self">
-        <div class="user-info">
-            {% if question.created_by.icon %}
-            <img src="{{ question.created_by.icon.url }}" alt="User Icon" class="user-icon">
-            {% else %}
-            <img src="/static/images/default_icon.png" alt="Default Icon" class="user-icon">
-            {% endif %}
-            <div>
-                <strong>{{ question.created_by.display_name }}</strong>
-                <p>{{ question.created_by.year }}年 | {{ question.created_by.department }}</p>
-            </div>
-            <div class="m-3">
-                {% if question.is_resolved %}
-                <span class="badge bg-success">解決済み</span>
+        <a href="{% url 'users:profile_view' question.created_by.id %}" class="text-decoration-none text-black">
+            <div class="user-info">
+                {% if question.created_by.icon %}
+                <img src="{{ question.created_by.icon.url }}" alt="User Icon" class="user-icon">
                 {% else %}
-                <span class="badge bg-warning text-dark">未解決</span>
+                <img src="/static/images/default_icon.png" alt="Default Icon" class="user-icon">
                 {% endif %}
+                <div>
+                    <strong>
+                        {% if question.created_by.display_name %}
+                        {{ question.created_by.display_name }}
+                        {% else %}
+                        {{ question.created_by.username }}
+                        {% endif %}
+                    </strong>
+                    
+                    <p class="mb-0" style="font-size: 0.9rem;">
+                        {% if question.created_by.get_year_display %}
+                        {{ question.created_by.get_year_display }} 
+                        {% endif %}
+                        {% if question.created_by.department %}
+                        | {{ question.created_by.department }}
+                        {% endif %}
+                    </p>
+                </div>
             </div>
-        </div>
+        </a>
+
 
         <p class="bubble-content">{{ question.description|linebreaksbr|urlize }}</p>
         {% if question.image %}
@@ -43,6 +53,7 @@
             </form>
 
             {% endif %}
+            <span class="badge bg-primary ms-2">{{ question.answers.count }} 回答</span>
         </div>
     </div>
 </div>
@@ -69,22 +80,35 @@
     {% if answers %}
     {% for answer in answers %}
     <div class="chat-bubble {% if answer.created_by == request.user %}self{% else %}other{% endif %}">
-        <div class="user-info">
-            {% if answer.created_by.icon %}
-            <img src="{{ answer.created_by.icon.url }}" alt="User Icon" class="user-icon">
-            {% else %}
-            <img src="/static/images/default_icon.png" alt="Default Icon" class="user-icon">
-            {% endif %}
-
-
-            <div>
-                <strong>{{ answer.created_by.display_name }}</strong>
-                <p>{{ answer.created_by.year }}年 | {{ answer.created_by.department }}</p>
-                {% if answer.image %}
-                <img src="{{ answer.image.url }}" alt="質問画像" class="img-fluid">
+        <a href="{% url 'users:profile_view' answer.created_by.id %}" class="text-decoration-none text-black">
+            <div class="user-info">
+                {% if answer.created_by.icon %}
+                <img src="{{ answer.created_by.icon.url }}" alt="User Icon" class="user-icon">
+                {% else %}
+                <img src="/static/images/default_icon.png" alt="Default Icon" class="user-icon">
                 {% endif %}
+                <div>
+
+                    <strong>
+                        {% if answer.created_by.display_name %}
+                        {{ answer.created_by.display_name }}
+                        {% else %}
+                        {{ answer.created_by.username }}
+                        {% endif %}
+                    </strong>
+                    
+                    <p class="mb-0" style="font-size: 0.9rem;">
+                        {% if answer.created_by.get_year_display %}
+                        {{ answer.created_by.get_year_display }} 
+                        {% endif %}
+                        {% if answer.created_by.department %}
+                        | {{ answer.created_by.department }}
+                        {% endif %}
+                    </p>
+                    
+                </div>
             </div>
-        </div>
+        </a>
         <p class="bubble-content">{{ answer.content|linebreaksbr|urlize }}</p>
         <div class="bubble-footer">
             <span>{{ answer.created_at }}</span>
@@ -96,8 +120,11 @@
             {% endif %}
             <form method="post" action="{% url 'questions:like_answer' answer.id %}" style="display:inline;">
                 {% csrf_token %}
-                <button type="submit" class="btn-like">👍 {{ answer.likes.count }}</button>
+                <button type="submit" class="btn-like {% if request.user in answer.likes.all %}btn-liked{% endif %}">
+                    👍 {{ answer.likes.count }}
+                </button>
             </form>
+
 
         </div>
     </div>

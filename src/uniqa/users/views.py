@@ -15,6 +15,8 @@ from django.urls import reverse
 import uuid
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserChangeForm
+from django.shortcuts import render, get_object_or_404
+from questions.models import Question, Answer
 
 def signup_view(request):
     if request.method == "POST":
@@ -29,7 +31,15 @@ def signup_view(request):
 @login_required
 def profile_view(request, pk):
     user_profile = get_object_or_404(CustomUser, pk=pk)
-    return render(request, 'users/profile.html', {'profile': user_profile})
+    # 質問と回答を取得
+    questions = Question.objects.filter(created_by=user_profile).order_by('-created_at')
+    answers = Answer.objects.filter(created_by=user_profile).order_by('-created_at')
+    
+    return render(request, 'users/profile.html', {
+        'profile': user_profile,
+        'questions': questions,
+        'answers': answers,
+    })
 
 @login_required
 def profile_edit_view(request):
